@@ -4,8 +4,9 @@ Slurm Usage Guide
 
 SSH flow: Go by *hanoi* -> get into *login-sp.vinai-systems.com* 
 ```
-ssh <username>@login-sp.vinai-systems.com -o ProxyCommand="ssh -q -o 'ForwardAgent yes' hanoi 'ssh-add -t 1 && nc %h %p'"
-Ex: ssh tantnd@login-sp.vinai-systems.com -o ProxyCommand="ssh -q -o 'ForwardAgent yes' hanoi 'ssh-add -t 1 && nc %h %p'"
+ssh hanoi
+ssh <username>@login-sp.vinai-systems.com
+Ex: ssh tantnd@login-sp.vinai-systems.com
 ```
 
 **HOME_FOLDER_ISILON <=> /home/your_username (on loginNode) <=> /vinai/your_username**
