@@ -1,5 +1,19 @@
 Slurm Usage Guide
 ===
+## Concept
+
+SSH to Hanoi -> ssh into login-sp.vinai-systems.com 
+```
+ssh hanoi
+ssh your_username@login-sp.vinai-systems.com
+Ex: ssh tantnd@login-sp.vinai-systems.com
+```
+
+**HOME_FOLDER_ISILON = /vinai/your_username**
+
+**SUPERPOD_STORAGE_DDN_FOLDER = /lustre/scratch/client**
+
+*You have to put your training data in DDN Storage, HOME ISILON will be used for data archive longterm*
 
 ## Introduction
 
