@@ -125,6 +125,17 @@ echo   Number of Cores/Task Allocated = $SLURM_CPUS_PER_TASK
 dgxuser@sdc2-hpc-login-mgmt001:~$ sbatch script.sh
 ```
 
+### Resources can be requested several different ways:
+| sbatch/srun Option | Description |
+| --- | --- |
+| `-N, --nodes=` | Specify the total number of nodes to request |
+| `-n, --ntasks=` | Specify the total number of tasks to request |
+| `--ntasks-per-node=` | Specify the number of tasks per node |
+| `--gpus-per-node=` | Specify the number of GPUs to use Per node |
+| `-G, --gpus=` | Total number of GPUs to allocate for the job |
+| `--gpus-per-task=` | Number of gpus per task |
+| `--gpus-per-node=` | Number of gpus to allocated per node |
+| `--exclusive` | Guarantee that nodes are not shared amongst jobs|
 ### Observing running jobs with squeue
 
 To see which jobs are running in the cluster, use the `squeue` command:
