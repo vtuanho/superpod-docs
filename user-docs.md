@@ -9,9 +9,9 @@ ssh your_username@login-sp.vinai-systems.com
 Ex: ssh tantnd@login-sp.vinai-systems.com
 ```
 
-**HOME_FOLDER_ISILON <=> /vinai/your_username**
+**HOME_FOLDER_ISILON <=> /home/your_username (on loginNode) <=> /vinai/your_username**
 
-**SUPERPOD_STORAGE_DDN_FOLDER <=> /lustre/scratch/client**
+**SUPERPOD_STORAGE_DDN_FOLDER <=> /lustre/scratch/client (on all node)**
 
 **PERSONAL_STORAGE_DDN_FOLDER <=> /lustre/scratch/client/vinai/user/your_username**
 
