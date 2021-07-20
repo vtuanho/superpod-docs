@@ -177,7 +177,88 @@ To cancel a job, use the `squeue` command to look up the JOBID and the `scancel`
 dgxuser@sdc2-hpc-login-mgmt001:~$ squeue
 dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 ```
+### Running job with docker container
+Pyxis being a SPANK plugin, the new command-line arguments it introduces are directly added to srun
 
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --help
+
+      --container-image=[USER@][REGISTRY#]IMAGE[:TAG]|PATH
+                              [pyxis] the image to use for the container
+                              filesystem. Can be either a docker image given as
+                              an enroot URI, or a path to a squashfs file on the
+                              remote host filesystem.
+
+      --container-mounts=SRC:DST[:FLAGS][,SRC:DST...]
+                              [pyxis] bind mount[s] inside the container. Mount
+                              flags are separated with "+", e.g. "ro+rprivate"
+
+      --container-workdir=PATH
+                              [pyxis] working directory inside the container
+      --container-name=NAME   [pyxis] name to use for saving and loading the
+                              container on the host. Unnamed containers are
+                              removed after the slurm task is complete; named
+                              containers are not. If a container with this name
+                              already exists, the existing container is used and
+                              the import is skipped.
+      --container-save=PATH   [pyxis] Save the container state to a squashfs
+                              file on the remote host filesystem.
+      --container-mount-home  [pyxis] bind mount the user's home directory.
+                              System-level enroot settings might cause this
+                              directory to be already-mounted.
+
+      --no-container-mount-home
+                              [pyxis] do not bind mount the user's home
+                              directory
+      --container-remap-root  [pyxis] ask to be remapped to root inside the
+                              container. Does not grant elevated system
+                              permissions, despite appearances.
+
+      --no-container-remap-root
+                              [pyxis] do not remap to root inside the container
+      --container-entrypoint  [pyxis] execute the entrypoint from the container
+                              image
+
+      --no-container-entrypoint
+                              [pyxis] do not execute the entrypoint from the
+                              container image
+```
+Example: run image nvidia+tensorflow:19.08 with 2 gpus, 6 cpus and 48 GB memory run script print tensorflow version:
+
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ cat tensor.py
+import tensorflow as tf
+print(tf.__version__)
+```
+
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --gres=gpu:2 --cpus-per-gpu=8 --mem=48000MB \
+                                        --container-image=/lustre/scratch/client/container/nvidia+tensorflow+19.08-py3.sqsh \
+                                        --container-mounts=/lustre/scratch/client/tensor.py:/workspace/tensor.py python tensor.py
+```
+
+```sh
+pyxis: creating container filesystem ...
+pyxis: starting container ...
+2021-07-20 14:34:05.972294: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+1.14.0
+```
+
+### Running an interactive  job (for debug)
+Example: Run image ubuntu:20.04 with debug (the same docker exec)
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --gres=gpu:2 --cpus-per-gpu=8 --mem=48000MB \
+                                        --container-image=/lustre/scratch/client/container/ubuntu:20.04.sqsh --pty /bin/bash
+```
+
+```sh
+pyxis: creating container filesystem ...
+pyxis: starting container ...
+root@sdc2-hpc-dgx-a100-001:/# ls
+bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+```
+
+* [ For more information ] (https://github.com/NVIDIA/pyxis/wiki/Usage)
 ### Running an MPI job
 
 To run a deep learning job with multiple processes, use MPI:
