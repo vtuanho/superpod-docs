@@ -61,17 +61,17 @@ The `sinfo` command can be used to output a lot more information about the clust
 To run a job, use the `srun` command:
 
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun hostname
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch hostname
 sdc2-hpc-dgx-a100-001
 ```
 
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --gres=gpu:8 env | grep CUDA
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --gres=gpu:8 env | grep CUDA
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 ```
 
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --ntasks 8 -l hostname
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --ntasks 8 -l hostname
 5: sdc2-hpc-dgx-a100-001
 2: sdc2-hpc-dgx-a100-001
 7: sdc2-hpc-dgx-a100-001
@@ -87,7 +87,7 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ srun --ntasks 8 -l hostname
 Especially when developing and experimenting, it's helpful to run an interactive job, which requests a resource and provides a command prompt as an interface to it:
 
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --pty /bin/bash
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --pty /bin/bash
 dgxuser@sdc2-hpc-dgx-a100-001:~$ hostname
 sdc2-hpc-dgx-a100-001
 dgxuser@sdc2-hpc-dgx-a100-001:~$ exit
@@ -181,7 +181,7 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 Pyxis being a SPANK plugin, the new command-line arguments it introduces are directly added to srun
 
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --help
+dgxuser@sdc2-hpc-login-mgmt001:~$ srun  --help
 
       --container-image=[USER@][REGISTRY#]IMAGE[:TAG]|PATH
                               [pyxis] the image to use for the container
