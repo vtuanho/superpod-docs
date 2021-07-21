@@ -177,6 +177,58 @@ To cancel a job, use the `squeue` command to look up the JOBID and the `scancel`
 dgxuser@sdc2-hpc-login-mgmt001:~$ squeue
 dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 ```
+
+### Running job with module
+
+* List available modules
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ module avail
+
+----------------------------------------------------------------------------------------------------------------- /sw/modules/all ------------------------------------------------------------------------------------------------------------------
+   mpi/3.0.6    python/conda/3.3.3    python/miniconda3/miniconda3
+
+Use "module spider" to find all possible modules.
+Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
+```
+
+* Example run python script with conda environment
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ cat /lustre/scratch/client/vinai/demo.py 
+import time
+
+a = 1
+b = 2
+print (a+b)
+
+for i in range(15):
+    print(i)
+    time.sleep(0.5)
+```
+
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ cat conda.sh 
+#!/bin/bash
+#SBATCH --job-name=py-job        
+#SBATCH --output=slurm_%A.out
+#SBATCH --error=slurm_%A.err
+#SBATCH --gres=gpu:1
+#SBATCH --ntasks=4
+#SBATCH --nodes=4
+#SBATCH --tasks-per-node=1
+#SBATCH --mem=4G
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=batch
+
+module purge
+module load python/conda/4.9.2
+activate myenv
+
+python /lustre/scratch/client/vinai/demo.py
+```
+Run sbatch
+```sh
+dgxuser@sdc2-hpc-login-mgmt001:~$ sbatch conda.sh
+````
 ### Running job with docker container
 Pyxis being a SPANK plugin, the new command-line arguments it introduces are directly added to srun
 
