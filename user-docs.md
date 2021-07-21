@@ -185,7 +185,7 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 dgxuser@sdc2-hpc-login-mgmt001:~$ module avail
 
 ----------------------------------------------------------------------------------------------------------------- /sw/modules/all ------------------------------------------------------------------------------------------------------------------
-   mpi/3.0.6    python/conda/3.3.3    python/miniconda3/miniconda3
+   mpi/3.0.6    python/conda/4.9.2    python/miniconda3/miniconda3
 
 Use "module spider" to find all possible modules.
 Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
