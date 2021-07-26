@@ -185,26 +185,19 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 dgxuser@sdc2-hpc-login-mgmt001:~$ module avail
 
 ----------------------------------------------------------------------------------------------------------------- /sw/modules/all ------------------------------------------------------------------------------------------------------------------
-   mpi/3.0.6    python/conda/4.9.2    python/miniconda3/miniconda3
+   mpi/3.0.6    python/2.7.18    python/3.6.10    python/3.8.10    python/miniconda3/miniconda3    python/pytorch/1.9.0+cu111    python/tensorflow/2.3.03
 
 Use "module spider" to find all possible modules.
 Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
 ```
 
-* Example run python script with conda environment
+* Create your environment
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ cat /lustre/scratch/client/vinai/demo.py 
-import time
-
-a = 1
-b = 2
-print (a+b)
-
-for i in range(15):
-    print(i)
-    time.sleep(0.5)
-```
-
+dgxuser@sdc2-hpc-login-mgmt001:~$ module load python/miniconda3/miniconda3
+dgxuser@sdc2-hpc-login-mgmt001:~$ conda create -p /lustre/scratch/client/vinai/users/youruser/yourfolder python=yourversion
+dgxuser@sdc2-hpc-login-mgmt001:~$ conda activate yourenv
+````
+* Installation your lib and packages you want
 ```sh
 dgxuser@sdc2-hpc-login-mgmt001:~$ cat conda.sh 
 #!/bin/bash
@@ -220,94 +213,51 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ cat conda.sh
 #SBATCH --partition=batch
 
 module purge
-module load python/conda/4.9.2
-activate myenv
+module load python/miniconda3/miniconda3
+conda activate /lustre/scratch/client/vinai/users/youruser/yourfolder
 
-python /lustre/scratch/client/vinai/demo.py
+command ...
 ```
 Run sbatch
 ```sh
 dgxuser@sdc2-hpc-login-mgmt001:~$ sbatch conda.sh
 ````
 ### Running job with docker container
-Pyxis being a SPANK plugin, the new command-line arguments it introduces are directly added to srun
-
+* List of available containers
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun  --help
-
-      --container-image=[USER@][REGISTRY#]IMAGE[:TAG]|PATH
-                              [pyxis] the image to use for the container
-                              filesystem. Can be either a docker image given as
-                              an enroot URI, or a path to a squashfs file on the
-                              remote host filesystem.
-
-      --container-mounts=SRC:DST[:FLAGS][,SRC:DST...]
-                              [pyxis] bind mount[s] inside the container. Mount
-                              flags are separated with "+", e.g. "ro+rprivate"
-
-      --container-workdir=PATH
-                              [pyxis] working directory inside the container
-      --container-name=NAME   [pyxis] name to use for saving and loading the
-                              container on the host. Unnamed containers are
-                              removed after the slurm task is complete; named
-                              containers are not. If a container with this name
-                              already exists, the existing container is used and
-                              the import is skipped.
-      --container-save=PATH   [pyxis] Save the container state to a squashfs
-                              file on the remote host filesystem.
-      --container-mount-home  [pyxis] bind mount the user's home directory.
-                              System-level enroot settings might cause this
-                              directory to be already-mounted.
-
-      --no-container-mount-home
-                              [pyxis] do not bind mount the user's home
-                              directory
-      --container-remap-root  [pyxis] ask to be remapped to root inside the
-                              container. Does not grant elevated system
-                              permissions, despite appearances.
-
-      --no-container-remap-root
-                              [pyxis] do not remap to root inside the container
-      --container-entrypoint  [pyxis] execute the entrypoint from the container
-                              image
-
-      --no-container-entrypoint
-                              [pyxis] do not execute the entrypoint from the
-                              container image
+tantnd/dc-pytorch                         1.6.0-python3.6-cuda11.0-arrow1.0-ubuntu18.04
+quangbd/dc-tensorflow                     1.15.3-python3.6-cuda11.0-cudnn8-ubuntu18.04
+quangbd/dc-miniconda                      3-cuda10.0-cudnn7-ubuntu18.04
+quangbd/dc-miniconda                      3-cuda8.0-cudnn7-ubuntu16.04
+quangbd/dc-tf-torch                       1.14.0-1.3.0-python3.6-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-python                         2.7-cuda9.0-cudnn7-ubuntu16.04
+quangbd/dc-tensorflow                     1.15.0-python3.7-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-tensorflow                     1.14.0-python3.7-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-python                         3.6-cuda9.0-cudnn7-ubuntu16.04
+quangbd/dc-python                         3.6-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-tf-torch                       1.15.0-1.4.0-python2.7-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-miniconda                      3-cuda10.1-cudnn7-ubuntu16.04
+quangbd/dc-pytorch                        1.4.0-python3.7-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-miniconda                      3-cuda10.0-cudnn7-ubuntu16.04
+quangbd/dc-tensorflow                     2.1.0-python3.7-cuda10.1-cudnn7-ubuntu16.04
+quangbd/miniconda                         3-cuda10.0-cudnn7-ubuntu16.04
 ```
-Example: run image nvidia+tensorflow:19.08 with 2 gpus, 6 cpus and 48 GB memory run script print tensorflow version:
-
+* You can run docker by example
 ```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ cat tensor.py
-import tensorflow as tf
-print(tf.__version__)
-```
+dgxuser@sdc2-hpc-login-mgmt001:~$ cat container.sh
+#!/bin/bash
+#SBATCH --job-name=container-job        
+#SBATCH --output=slurm_%A.out
+#SBATCH --error=slurm_%A.err
+#SBATCH --gres=gpu:2
+#SBATCH --mem=48000MB
+#SBATCH --cpus-per-gpu=8
+#SBATCH --partition=batch
 
-```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --gres=gpu:2 --cpus-per-gpu=8 --mem=48000MB \
-                                        --container-image=/lustre/scratch/client/container/nvidia+tensorflow+19.08-py3.sqsh \
-                                        --container-mounts=/lustre/scratch/client/tensor.py:/workspace/tensor.py python tensor.py
-```
-
-```sh
-pyxis: creating container filesystem ...
-pyxis: starting container ...
-2021-07-20 14:34:05.972294: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
-1.14.0
-```
-
-### Running an interactive  job (for debug)
-Example: Run image ubuntu:20.04 with debug (the same docker exec)
-```sh
-dgxuser@sdc2-hpc-login-mgmt001:~$ srun --partition=batch --gres=gpu:2 --cpus-per-gpu=8 --mem=48000MB \
-                                        --container-image=/lustre/scratch/client/container/ubuntu:20.04.sqsh --pty /bin/bash
-```
-
-```sh
-pyxis: creating container filesystem ...
-pyxis: starting container ...
-root@sdc2-hpc-dgx-a100-001:/# ls
-bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+srun --partition=batch --gres=gpu:2 --cpus-per-gpu=8 --mem=48000MB \
+                                        --container-image=yourimage \
+                                        --container-mounts=host folder:container folder \
+                                        command ...
 ```
 
 * [ For more information ] (https://github.com/NVIDIA/pyxis/wiki/Usage)
