@@ -185,7 +185,7 @@ dgxuser@sdc2-hpc-login-mgmt001:~$ scancel JOBID
 dgxuser@sdc2-hpc-login-mgmt001:~$ module avail
 
 ----------------------------------------------------------------------------------------------------------------- /sw/modules/all ------------------------------------------------------------------------------------------------------------------
-   mpi/3.0.6    python/2.7.18    python/3.6.10    python/3.8.10    python/miniconda3/miniconda3    python/pytorch/1.9.0+cu111    python/tensorflow/2.3.03
+   mpi/3.0.6    python/2.7.18    python/3.6.10    python/3.8.10    python/miniconda3/miniconda3    python/pytorch/1.9.0+cu111    python/tensorflow/2.3.0
 
 Use "module spider" to find all possible modules.
 Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
